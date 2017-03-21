@@ -40,7 +40,7 @@ def main():
         dest='offset',
         help='choose offset for SCC file; measured in seconds',
         default=0)
-    (options, args) = parser.parse_args()
+    options, args = parser.parse_args()
 
     try:
         filename = args[0]
