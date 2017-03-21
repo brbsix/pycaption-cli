@@ -1,12 +1,14 @@
 pycaption-cli
 =============
 
+Note: This fork adds Python 3 support
+
 A command line interface for the pycaption module.
 
-Setup
-=====
+Installation
+============
 
-    python setup.py install
+    pip3 install --user git+https://github.com/brbsix/pycaption-cli.git
 
 Usage
 =====
