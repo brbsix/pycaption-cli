@@ -13,23 +13,23 @@ Usage
 
 From your command line:
 
-    pycaption <path to caption file> [--sami --dfxp --srt --transcript]
+    pycaption (--dfxp | --sami | --srt | --transcript) <path to caption file>
     
 e.g.
 
-    pycaption ../jnorton-caption.scc --dfxp --transcript
+    pycaption --dfxp ../jnorton-caption.scc
 
 Output is written to the screen. To write to a file, use something like this:
 
-    pycaption ../jnorton-caption.scc --dfxp > jnorton.xml
+    pycaption --dfxp ../jnorton-caption.scc > jnorton.xml
 
 Supported Formats
 =================
 
+ - DFXP (read/write)
+ - SAMI (read/write)
  - SCC (read)
  - SRT (read/write)
- - SAMI (read/write)
- - DFXP (read/write)
  - Transcript (write)
  
 License

@@ -1,95 +1,107 @@
-import codecs
-import optparse
+# -*- coding: utf-8 -*-
 
+"""A command line interface for the pycaption module"""
+
+# standard imports
+import argparse
+
+# external imports
 import pycaption
 
 
+def get_reader(captions, options):
+    """Return caption reader."""
+
+    try:
+        reader = pycaption.detect_format(captions)
+    except IndexError:
+        reader = None
+
+    if reader is None:
+        raise Exception('No caption format detected')
+
+    reader_options = {
+        'content': captions
+    }
+
+    if reader is pycaption.SCCReader:
+        if options.offset:
+            reader_options['offset'] = options.offset
+        if options.lang:
+            reader_options['lang'] = options.lang
+
+    return reader, reader_options
+
+
+def get_writer(options):
+    """Return caption writer."""
+
+    if options.dfxp:
+        return pycaption.DFXPWriter
+    elif options.sami:
+        return pycaption.SAMIWriter
+    elif options.srt:
+        return pycaption.SRTWriter
+    elif options.transcript:
+        from pycaption.transcript import TranscriptWriter
+        return TranscriptWriter
+
+
 def main():
-    parser = optparse.OptionParser('usage: %prog [options]')
-    parser.add_option(
-        '--sami',
-        action='store_true',
-        dest='sami',
-        help='write captions in SAMI format',
-        default=False,)
-    parser.add_option(
+    """Start application."""
+
+    options = parse()
+
+    with options.file:
+        captions = options.file.read()
+
+    reader, reader_options = get_reader(captions, options)
+
+    writer = get_writer(options)
+
+    output = writer().write(reader().read(**reader_options))
+
+    print(output)
+
+
+def parse():
+    """Parse command-line options."""
+
+    parser = argparse.ArgumentParser()
+
+    group = parser.add_mutually_exclusive_group(required=True)
+    group.add_argument(
         '--dfxp',
         action='store_true',
-        dest='dfxp',
-        help='write captions in DFXP format',
-        default=False,)
-    parser.add_option(
+        help='write captions in DFXP format')
+    group.add_argument(
+        '--sami',
+        action='store_true',
+        help='write captions in SAMI format')
+    group.add_argument(
         '--srt',
         action='store_true',
-        dest='srt',
-        help='write captions in SRT format',
-        default=False,)
-    parser.add_option(
+        help='write captions in SRT format')
+    group.add_argument(
         '--transcript',
         action='store_true',
-        dest='transcript',
-        help='write transcript for captions',
-        default=False,)
-    parser.add_option(
+        help='write transcript for captions')
+    parser.add_argument(
         '--scc_lang',
         dest='lang',
-        help='choose override language for input',
-        default='',)
-    parser.add_option(
+        help='choose override language for input')
+    parser.add_argument(
         '--scc_offset',
         dest='offset',
-        help='choose offset for SCC file; measured in seconds',
+        help='choose offset for SCC file (in seconds)',
+        type=int,
         default=0)
-    options, args = parser.parse_args()
+    parser.add_argument(
+        'file',
+        metavar='FILE',
+        type=argparse.FileType('r'))
 
-    try:
-        filename = args[0]
-    except:
-        raise Exception(
-            ('Expected usage: python caption_converter.py <path to caption file> ',
-             '[--sami --dfxp --srt --transcript]'))
-
-    try:
-        captions = codecs.open(filename, encoding='utf-8', mode='r').read()
-    except:
-        captions = open(filename, 'r').read()
-        captions = unicode(captions, errors='replace')
-
-    content = read_captions(captions, options)
-    write_captions(content, options)
-
-
-def read_captions(captions, options):
-    scc_reader = pycaption.SCCReader()
-    srt_reader = pycaption.SRTReader()
-    sami_reader = pycaption.SAMIReader()
-    dfxp_reader = pycaption.DFXPReader()
-
-    if scc_reader.detect(captions):
-        if options.lang:
-            return scc_reader.read(captions, lang=options.lang,
-                                   offset=int(options.offset))
-        else:
-            return scc_reader.read(captions, offset=int(options.offset))
-    elif srt_reader.detect(captions):
-        return srt_reader.read(captions)
-    elif sami_reader.detect(captions):
-        return sami_reader.read(captions)
-    elif dfxp_reader.detect(captions):
-        return dfxp_reader.read(captions)
-    else:
-        raise Exception('No caption format detected :(')
-
-
-def write_captions(content, options):
-    if options.sami:
-        print(pycaption.SAMIWriter().write(content).encode('utf-8'))
-    if options.dfxp:
-        print(pycaption.DFXPWriter().write(content).encode('utf-8'))
-    if options.srt:
-        print(pycaption.SRTWriter().write(content).encode('utf-8'))
-    if options.transcript:
-        print(pycaption.TranscriptWriter().write(content).encode('utf-8'))
+    return parser.parse_args()
 
 
 if __name__ == '__main__':
