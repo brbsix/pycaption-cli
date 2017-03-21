@@ -5,43 +5,49 @@ import pycaption
 
 
 def main():
-    parser = optparse.OptionParser("usage: %prog [options]")
-    parser.add_option("--sami",
-            action='store_true',
-            dest='sami',
-            help="write captions in SAMI format",
-            default=False,)
-    parser.add_option("--dfxp",
-            action='store_true',
-            dest='dfxp',
-            help="write captions in DFXP format",
-            default=False,)
-    parser.add_option("--srt",
-            action='store_true',
-            dest='srt',
-            help="write captions in SRT format",
-            default=False,)
-    parser.add_option("--transcript",
-            action='store_true',
-            dest='transcript',
-            help="write transcript for captions",
-            default=False,)
-    parser.add_option("--scc_lang",
-            dest='lang',
-            help="choose override language for input",
-            default='',)
-    parser.add_option("--scc_offset",
-            dest='offset',
-            help="choose offset for SCC file; measured in seconds",
-            default=0)
+    parser = optparse.OptionParser('usage: %prog [options]')
+    parser.add_option(
+        '--sami',
+        action='store_true',
+        dest='sami',
+        help='write captions in SAMI format',
+        default=False,)
+    parser.add_option(
+        '--dfxp',
+        action='store_true',
+        dest='dfxp',
+        help='write captions in DFXP format',
+        default=False,)
+    parser.add_option(
+        '--srt',
+        action='store_true',
+        dest='srt',
+        help='write captions in SRT format',
+        default=False,)
+    parser.add_option(
+        '--transcript',
+        action='store_true',
+        dest='transcript',
+        help='write transcript for captions',
+        default=False,)
+    parser.add_option(
+        '--scc_lang',
+        dest='lang',
+        help='choose override language for input',
+        default='',)
+    parser.add_option(
+        '--scc_offset',
+        dest='offset',
+        help='choose offset for SCC file; measured in seconds',
+        default=0)
     (options, args) = parser.parse_args()
 
     try:
         filename = args[0]
     except:
         raise Exception(
-        ('Expected usage: python caption_converter.py <path to caption file> ',
-        '[--sami --dfxp --srt --transcript]'))
+            ('Expected usage: python caption_converter.py <path to caption file> ',
+             '[--sami --dfxp --srt --transcript]'))
 
     try:
         captions = codecs.open(filename, encoding='utf-8', mode='r').read()
