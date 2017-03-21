@@ -8,6 +8,8 @@ A command line interface for the pycaption module.
 Installation
 ============
 
+It is recommended to install the program in a virtualenv.
+
     pip3 install --user git+https://github.com/brbsix/pycaption-cli.git
 
 Usage
