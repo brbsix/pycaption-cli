@@ -1,5 +1,5 @@
-import optparse
 import codecs
+import optparse
 
 import pycaption
 
